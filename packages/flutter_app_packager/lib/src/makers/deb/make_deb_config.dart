@@ -251,8 +251,9 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
   List<String>? categories;
 
   List<String> get postinstallScripts => [
-        'ln -s /usr/share/$appBinaryName/$appBinaryName /usr/bin/$appBinaryName',
+        'ln -s /opt/$appBinaryName/$appBinaryName /usr/bin/$appBinaryName',
         'chmod +x /usr/bin/$appBinaryName',
+        'chmod -R 777 /opt/$appBinaryName/data/',
         ..._postinstallScripts,
       ];
 
