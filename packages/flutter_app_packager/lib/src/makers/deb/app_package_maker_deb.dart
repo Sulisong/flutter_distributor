@@ -58,12 +58,16 @@ class AppPackageMakerDeb extends AppPackageMaker {
       packagingDirectory.path,
       'usr/share/icons/hicolor/256x256/apps',
     );
+    final iconPixmapsDir = path.join(
+      packagingDirectory.path,
+      'usr/share/pixmaps',
+    );
     final mkdirProcessResult = await $('mkdir', [
       '-p',
       debianDir,
-      path.join(packagingDirectory.path, 'usr/share', makeConfig.appBinaryName),
+      path.join(packagingDirectory.path, 'opt', makeConfig.appBinaryName),
       applicationsDir,
-      if (makeConfig.icon != null) ...[icon128Dir, icon256Dir],
+      if (makeConfig.icon != null) ...[icon128Dir, icon256Dir, iconPixmapsDir],
     ]);
 
     if (mkdirProcessResult.exitCode != 0) throw MakeError();
@@ -83,6 +87,12 @@ class AppPackageMakerDeb extends AppPackageMaker {
       await iconFile.copy(
         path.join(
           icon256Dir,
+          makeConfig.appBinaryName + path.extension(makeConfig.icon!),
+        ),
+      );
+      await iconFile.copy(
+        path.join(
+          iconPixmapsDir,
           makeConfig.appBinaryName + path.extension(makeConfig.icon!),
         ),
       );
@@ -112,7 +122,7 @@ class AppPackageMakerDeb extends AppPackageMaker {
     await $('cp', [
       '-fr',
       '${appDirectory.path}/.',
-      '${packagingDirectory.path}/usr/share/${makeConfig.appBinaryName}/',
+      '${packagingDirectory.path}/opt/${makeConfig.appBinaryName}/',
     ]);
 
     ProcessResult processResult = await $('dpkg-deb', [
